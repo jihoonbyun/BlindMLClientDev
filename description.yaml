@@ -1,0 +1,8 @@
+Type: Jupyter Notebook Extension
+Compatibility: 3.x, 4.x, 5.x, 6.x
+Name: BlindMLClient
+Main: main.js
+Link: README.md
+Description: This is Notebook extension for BlindML. GG
+Parameters:
+- none
