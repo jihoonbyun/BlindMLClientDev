@@ -6,7 +6,7 @@ define([
     function extractPythonFunctions() {
         // 현재 열려 있는 노트북의 모든 셀을 가져옵니다.
         var cells = Jupyter.notebook.get_cells();
-        
+
         // 모든 셀을 순회하며 Python 함수를 찾습니다.
         cells.forEach(function(cell) {
             if (cell.cell_type === 'code') {
@@ -23,13 +23,27 @@ define([
     }
 
     function load_ipython_extension() {
+        //파이선 함수 추출
+        extractPythonFunctions()
+
+        //변경 가능 밸리데이션 체크
+
+
+        //함수변경
+
+
+        //빌드
+
+
+        //모델파일 및 키파일 저장
+
+
         console.log('BuildProcess extension loaded');
         // 필요한 경우, 여기서 extractPythonFunctions()을 호출하거나 다른 이벤트에 바인딩할 수 있습니다.
     }
 
     return {
-        load_ipython_extension: load_ipython_extension,
-        extractPythonFunctions: extractPythonFunctions
+        load_ipython_extension: load_ipython_extension
     };
-	
+
 });
