@@ -3,34 +3,55 @@ define([
     'base/js/namespace',
     'base/js/events',
     'jquery',
-    './scripts/BuildProcess'  // 상대 경로로 BuildProcess 모듈을 참조
+    './js/BuildProcess'  // Referencing BuildProcess module
 ], function(Jupyter, events, $, BuildProcess) {
     function createBlindMLMenu() {
-        // 메뉴 아이템이 추가될 위치를 찾습니다.
+        // Find where to add the menu items
         var $navbar = $("#maintoolbar-container");
-        
-        // BuildML 메뉴를 생성합니다.
+
+        // Create the BlindML menu
         var $blindMLMenu = $('<div/>').addClass('btn-group').attr('id', 'blindml-menu');
-        
-        // 메뉴 버튼을 생성합니다.
-        var $Button = $('<button/>')
+
+        // Create the menu button
+        var $button = $('<button/>')
             .addClass('btn btn-default dropdown-toggle')
             .attr('data-toggle', 'dropdown')
             .text('BlindML ')
             .append($('<span/>').addClass('caret'));
-        $blindMLMenu.append($Button);
-        
-        // 드롭다운 메뉴를 생성합니다.
+        $blindMLMenu.append($button);
+
+        // Create the dropdown menu
         var $blindMLDropdown = $('<ul/>').addClass('dropdown-menu');
         $blindMLMenu.append($blindMLDropdown);
 
-        // 메뉴 항목을 추가합니다.
-        $blindMLDropdown.append($('<li/>').append($('<a/>').text('Build').on('click', BuildProcess.load_ipython_extension))); // Function name is now in camelCase
-        $blindMLDropdown.append($('<li/>').append($('<a/>').text('Deploy').on('click', function() { console.log('Deploy clicked'); })));
-        $blindMLDropdown.append($('<li/>').append($('<a/>').text('Repository').on('click', function() { console.log('Repository clicked'); })));
-        $blindMLDropdown.append($('<li/>').append($('<a/>').text('KMS').on('click', function() { console.log('KMS clicked'); })));
+        // Add menu items
+        var $deployMenu = $('<li/>').addClass('dropdown-submenu');
+        $deployMenu.append($('<a/>').text('Deploy to FHE Model'));
+        var $deployDropdown = $('<ul/>').addClass('dropdown-menu');
+        $deployDropdown.append($('<li/>').append($('<a/>').text('ZAMA').on('click', BuildProcess.deployZama)));
+        $deployDropdown.append($('<li/>').append($('<a/>').text('CSEM').on('click', BuildProcess.deployCsem)));
+        $deployMenu.append($deployDropdown);
+        $blindMLDropdown.append($deployMenu);
 
-        // 메뉴를 나비게이션 바에 추가합니다.
+        var $settingsMenu = $('<li/>').addClass('dropdown-submenu');
+        $settingsMenu.append($('<a/>').text('Settings'));
+        var $settingsDropdown = $('<ul/>').addClass('dropdown-menu');
+        $settingsDropdown.append($('<li/>').append($('<a/>').text('Repository').on('click', BuildProcess.openRepository)));
+        $settingsDropdown.append($('<li/>').append($('<a/>').text('Preference').on('click', BuildProcess.openPreference)));
+        $settingsMenu.append($settingsDropdown);
+        $blindMLDropdown.append($settingsMenu);
+
+        var $helpMenu = $('<li/>').addClass('dropdown-submenu');
+        $helpMenu.append($('<a/>').text('Help'));
+        var $helpDropdown = $('<ul/>').addClass('dropdown-menu');
+        $helpDropdown.append($('<li/>').append($('<a/>').text('User Guide').on('click', BuildProcess.openUserGuide)));
+        $helpDropdown.append($('<li/>').append($('<a/>').text('Version').on('click', BuildProcess.openVersion)));
+        $helpDropdown.append($('<li/>').append($('<a/>').text('Updates').on('click', BuildProcess.checkUpdates)));
+        $helpDropdown.append($('<li/>').append($('<a/>').text('Report Issue').on('click', BuildProcess.reportIssue)));
+        $helpMenu.append($helpDropdown);
+        $blindMLDropdown.append($helpMenu);
+
+        // Add the menu to the navbar
         $navbar.append($blindMLMenu);
     }
 
@@ -39,8 +60,8 @@ define([
             createBlindMLMenu();
         }
     }
-    
+
     return {
-    load_ipython_extension: load_ipython_extension
+        load_ipython_extension: load_ipython_extension
     };
 });
