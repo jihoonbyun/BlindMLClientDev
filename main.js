@@ -1,11 +1,17 @@
 // main.js
+// main.js
 define([
     'base/js/namespace',
     'base/js/events',
     'jquery',
-    './js/BuildProcess'  // Referencing BuildProcess module
-], function(Jupyter, events, $, BuildProcess) {
+    './metadata',  // Metadata 모듈 추가
+    './js/BuildProcess'  // BuildProcess 모듈
+], function(Jupyter, events, $, metadata, BuildProcess) {
     function createBlindMLMenu() {
+
+        // Metadata 정보를 BuildProcess 모듈에 전달
+        BuildProcess.setMetadata(metadata);
+
         // Find where to add the menu items
         var $navbar = $("#maintoolbar-container");
 

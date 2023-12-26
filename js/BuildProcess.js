@@ -1,13 +1,16 @@
-// buildProcess.js
+// bui
 define([
     'base/js/namespace',
-    'base/js/dialog',
+    '../module/zama/deploy',
+], function(Jupyter, DeployZama) {
 
-], function(Jupyter, dialog) {
+    var metadata = null;
 
+    function setMetadata(md) {
+        metadata = md;
+    }
 
     function deployZamaWrapper() {
-        // 현재 노트북의 모든 셀의 코드를 읽어옵니다.
         var codeCells = Jupyter.notebook.get_cells().filter(function(cell) {
             return cell.cell_type === 'code';
         });
@@ -15,21 +18,23 @@ define([
             return cell.get_text();
         }).join('\n');
 
-        // metadata.json 파일에서 버전 정보를 읽습니다.
-        var metadata = JSON.parse(fs.readFileSync('../../metadata.json', 'utf8'));
-        var zamaVersion = metadata.module.zama.version;
+        if (metadata) {
+            var zamaVersion = metadata.module.zama.version;
 
-        // 동적으로 deploy.js 모듈을 로드합니다.
-        require(['../module/zama/' + zamaVersion + '/deploy'], function(DeployZama) {
+            // DeployZama 클래스 인스턴스 생성
             var deployer = new DeployZama();
             deployer.deploy(userCode).then(() => {
                 console.log("Deployment completed successfully");
             }).catch((error) => {
                 console.error("Deployment failed: ", error);
             });
-        });
-    }
+            
 
+
+        } else {
+            console.error("Metadata is not set");
+        }
+    }
 
     function deployCsem() {
         alert("TODO"); // Replace with actual logic
@@ -50,10 +55,13 @@ define([
     function openVersion() {
         alert("Showing Version..."); 
     }
-
     return {
+        setMetadata: setMetadata,
         deployZama: deployZamaWrapper,
-        deployCsem: deployCsem
-        
+        deployCsem: deployCsem,
+        openRepository: openRepository,
+        openPreference: openPreference,
+        openUserGuide: openUserGuide,
+        openVersion: openVersion
     };
 });

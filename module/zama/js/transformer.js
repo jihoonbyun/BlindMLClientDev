@@ -1,6 +1,13 @@
+define(function() {
+    function executeTransformerCode(user_code) {
+
+        tranformerCode = `
+# 여기에 Python 코드
 import ast
 import sys
 import subprocess
+import base64
+import json
 # astor 모듈 설치 확인 및 설치
 try:
     import astor
@@ -35,7 +42,6 @@ class ConcreteMLTransformer(ast.NodeTransformer):
         return node
 
     def visit_Call(self, node):
-        # 클래스 생성 호출에 n_bits=8 추가
         if isinstance(node.func, ast.Name) and node.func.id in self.supported_classes:
             n_bits_arg = ast.keyword(arg='n_bits', value=ast.Num(n=8))
             node.keywords.append(n_bits_arg)
@@ -49,10 +55,9 @@ def convert_to_concrete_ml(user_code):
     transformer = ConcreteMLTransformer()
     transformed_tree = transformer.visit(tree)
 
-    # 모델 저장 코드 추가
-    save_code_str = f"""
-directory_name =  '/app/results'
-fhemodel_dev = FHEModelDev(directory_name, {transformer.model_variable_name})
+    save_code_str = """
+directory_name = '/app/results'
+fhemodel_dev = FHEModelDev(directory_name, {}""".format(transformer.model_variable_name) + """)
 fhemodel_dev.save()
 """
     save_code = ast.parse(save_code_str).body
@@ -60,34 +65,37 @@ fhemodel_dev.save()
 
     return astor.to_source(transformed_tree)
 
-def execute_transformed_code(transformed_code):
-    # concrete-ml 모듈 설치 확인 및 설치
-    try:
-        import concrete
-    except ImportError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "concrete-ml"])
-        import concrete
-    try:
-        exec(transformed_code)
-        return "성공"
-    except Exception as e:
-        return f"실패: {e.__class__.__name__}: {e}"
+def transform_code(encoded_user_code):
+    #decoded_user_code = base64.b64decode(encoded_user_code).decode('utf-8')
+    #converted_code = convert_to_concrete_ml(decoded_user_code)
+    #return converted_code
+    return convert_to_concrete_ml(encoded_user_code)
 
-def main():
-    # metadata.json 파일에서 zama 버전 정보 읽기
-    metadata_path = "metadata.json"
-    with open(metadata_path, "r") as file:
-        metadata = json.load(file)
-        zama_version = metadata["module"]["zama"]["version"]
+`
 
-    # 커맨드 라인 인자로 전달된 사용자 코드 받기
-    if len(sys.argv) > 1:
-        user_code = sys.argv[1]
-        converted_code = convert_to_concrete_ml(user_code)
-        execution_result = execute_transformed_code(converted_code)
-        print(execution_result)
-    else:
-        print("사용자 코드가 제공되지 않았습니다.")
+        userCode = `user_code="""`  + user_code + `"""`
 
-if __name__ == "__main__":
-    main()
+        executeCode = `
+print(transform_code(encoded_user_code))
+        `;
+
+        const combinedCode = tranformerCode  + userCode + executeCode
+
+   
+        return combinedCode;
+        /*
+        Jupyter.notebook.kernel.execute(combinedCode, {
+            iopub: {
+                output: (msg) => {
+                    console.log("converted_code",msg.content.text);
+                }
+            }
+        });
+        */
+
+    }
+
+    return {
+        executeTransformerCode: executeTransformerCode
+    };
+});
