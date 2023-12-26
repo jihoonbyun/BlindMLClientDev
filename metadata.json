@@ -1,11 +1,11 @@
 {
- lib : {
+ module : {
   "zama": {
-    "latestVersion": "v1",
+    "version": "v1",
     "repository": "https://github.com/your-repository",
     "lastUpdated": "2023-04-01T12:00:00Z"
   }
- },
+ },s
  repo : ""
   // 여기에 다른 FHE 모듈에 대한 정보를 추가할 수 있습니다.
 }
