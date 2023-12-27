@@ -76,7 +76,7 @@ def transform_code(encoded_user_code):
         userCode = `user_code="""`  + user_code + `"""`
 
         executeCode = `
-print(transform_code(encoded_user_code))
+print(transform_code(user_code))
         `;
 
         const combinedCode = tranformerCode  + userCode + executeCode
