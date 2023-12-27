@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/jhb/anaconda3/envs/blindml/lib/python3.8/site-packages/concrete/numpy/compilation/compiler.py", line 370, in compile
+    self._evaluate("Compiling", inputset)
+  File "/Users/jhb/anaconda3/envs/blindml/lib/python3.8/site-packages/concrete/numpy/compilation/compiler.py", line 208, in _evaluate
+    self._trace(first_sample)
+  File "/Users/jhb/anaconda3/envs/blindml/lib/python3.8/site-packages/concrete/numpy/compilation/compiler.py", line 144, in _trace
+    parameters = {
+  File "/Users/jhb/anaconda3/envs/blindml/lib/python3.8/site-packages/concrete/numpy/compilation/compiler.py", line 145, in <dictcomp>
+    param: Value.of(arg, is_encrypted=(status == EncryptionStatus.ENCRYPTED))
+  File "/Users/jhb/anaconda3/envs/blindml/lib/python3.8/site-packages/concrete/numpy/values/value.py", line 93, in of
+    raise ValueError(f"Value cannot represent {repr(value)}")
+ValueError: Value cannot represent array(['mean radius'], dtype='<U11')

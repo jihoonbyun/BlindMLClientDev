@@ -4,28 +4,31 @@ define([
     './js/transformer'
 ], function(Jupyter, dialog, TransFormer) {
 
-    class DeployZama {
+    class BuildZama {
         constructor() {
             this.dialogInstance = null;
             this.dialogBody = null;
         }
 
-        async deploy(userCode) {
+        async build(userCode) {
             try {
     
                 //스텝1 : 코드 컨버팅
                 const make_code = TransFormer.executeTransformerCode(userCode);
-                this.showDialog('Deploying', 'Running Step 1...');
+                this.showDialog('Converting', 'Currently converting the Python code to FHE format. Please wait a moment.');
                 const converted_code = await this.executePythonCode(make_code);
-                console.log("Converted Code")
+                console.log("Converted Code");
                 console.log(converted_code);
-                this.updateDialog('FHE Conversion Complete', converted_code);
+                this.updateDialog('Conversion Complete', converted_code);
 
-                // Step 2, Step 3, Step 4 등의 추가 단계를 여기에 구현할 수 있습니다.
-                // 예: this.executePythonCode('추가 Python 코드')
+                // Step 2: 코드 실행
+                this.updateDialog('Compiling...', 'Compiling the transformed FHE code. Please wait a moment.');
+                await this.executePythonCode(converted_code);
+                this.updateDialog('Build Complete', "The FHE model has been successfully built and it is saved in 'blindml_output' folder. (Please proceed with 'deploy')");
+    
 
             } catch (error) {
-                this.updateDialog('Error', error.message);
+                this.updateDialog('Oops!', error.message);
             }
         }
 
@@ -69,5 +72,5 @@ define([
         }
     }
 
-    return DeployZama;
+    return BuildZama;
 });

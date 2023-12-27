@@ -1,8 +1,8 @@
 // bui
 define([
     'base/js/namespace',
-    '../module/zama/deploy',
-], function(Jupyter, DeployZama) {
+    '../module/zama/build_zama',
+], function(Jupyter, BuildZama) {
 
     var metadata = null;
 
@@ -10,7 +10,7 @@ define([
         metadata = md;
     }
 
-    function deployZamaWrapper() {
+    function buildZamaWrapper() {
         var codeCells = Jupyter.notebook.get_cells().filter(function(cell) {
             return cell.cell_type === 'code';
         });
@@ -21,22 +21,35 @@ define([
         if (metadata) {
             var zamaVersion = metadata.module.zama.version;
 
-            // DeployZama 클래스 인스턴스 생성
-            var deployer = new DeployZama();
-            deployer.deploy(userCode).then(() => {
-                console.log("Deployment completed successfully");
+            // BuildZama 클래스 인스턴스 생성
+            var builder = new BuildZama();
+            builder.build(userCode).then(() => {
+                console.log("FHE Model build completed successfully");
             }).catch((error) => {
-                console.error("Deployment failed: ", error);
+                console.error("Vuild failed: ", error);
             });
             
-
-
         } else {
             console.error("Metadata is not set");
         }
     }
 
-    function deployCsem() {
+    function generateKeys(){
+
+    }
+    function removeKeys() {
+
+    }
+    function kms(){
+        
+    }
+
+
+    function deploy() {
+        alert("TODO")
+    }
+
+    function buildCsem() {
         alert("TODO"); // Replace with actual logic
     }
 
@@ -57,11 +70,15 @@ define([
     }
     return {
         setMetadata: setMetadata,
-        deployZama: deployZamaWrapper,
-        deployCsem: deployCsem,
+        buildZama: buildZamaWrapper,
+        deploy : deploy,
+        buildCsem: buildCsem,
         openRepository: openRepository,
         openPreference: openPreference,
         openUserGuide: openUserGuide,
-        openVersion: openVersion
+        openVersion: openVersion,
+        generateKeys: generateKeys,
+        removeKeys : removeKeys,
+        kms:kms
     };
 });

@@ -8,6 +8,7 @@ define(function() {
             }
         },
         repo: "",
+        temp_folder : "/",
         jupyter: {
             version : {
                 "IPython": "8.2.0",

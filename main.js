@@ -31,13 +31,19 @@ define([
         $blindMLMenu.append($blindMLDropdown);
 
         // Add menu items
-        var $deployMenu = $('<li/>').addClass('dropdown-submenu');
-        $deployMenu.append($('<a/>').text('Deploy to FHE Model'));
-        var $deployDropdown = $('<ul/>').addClass('dropdown-menu');
-        $deployDropdown.append($('<li/>').append($('<a/>').text('ZAMA').on('click', BuildProcess.deployZama)));
-        $deployDropdown.append($('<li/>').append($('<a/>').text('CSEM').on('click', BuildProcess.deployCsem)));
-        $deployMenu.append($deployDropdown);
+        var $buildMenu = $('<li/>').addClass('dropdown-submenu');
+        $buildMenu.append($('<a/>').text('Build FHE Model'));
+        var $buildDropdown = $('<ul/>').addClass('dropdown-menu');
+        $buildDropdown.append($('<li/>').append($('<a/>').text('ZAMA').css('cursor', 'pointer').on('click', BuildProcess.buildZama)));
+        $buildDropdown.append($('<li/>').append($('<a/>').text('CSEM').css('cursor', 'pointer').on('click', BuildProcess.buildCsem)));
+        $buildMenu.append($buildDropdown);
+        $blindMLDropdown.append($buildMenu);
+
+
+        var $deployMenu = $('<li/>').addClass('dropdown-menu');
+        $deployMenu.append($('<a/>').text('Deploy').css('cursor', 'pointer').on('click', BuildProcess.deploy));
         $blindMLDropdown.append($deployMenu);
+
 
         var $settingsMenu = $('<li/>').addClass('dropdown-submenu');
         $settingsMenu.append($('<a/>').text('Settings'));

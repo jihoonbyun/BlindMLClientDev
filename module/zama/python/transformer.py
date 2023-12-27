@@ -1,3 +1,4 @@
+# 여기에 Python 코드
 import ast
 import sys
 import subprocess
@@ -37,12 +38,9 @@ class ConcreteMLTransformer(ast.NodeTransformer):
         return node
 
     def visit_Call(self, node):
-        if isinstance(node.func, ast.Name) and node.func.id in self.supported_classes:
-            n_bits_arg = ast.keyword(arg='n_bits', value=ast.Num(n=8))
-            node.keywords.append(n_bits_arg)
-        elif isinstance(node.func, ast.Attribute) and node.func.attr in self.supported_classes:
-            n_bits_arg = ast.keyword(arg='n_bits', value=ast.Num(n=8))
-            node.keywords.append(n_bits_arg)
+        if hasattr(node.func, 'attr') and node.func.attr == 'fit':
+            if len(node.args) > 0 and isinstance(node.args[0], ast.Name):
+                self.fit_variable_name = node.args[0].id
         return self.generic_visit(node)
 
 def convert_to_concrete_ml(user_code):
@@ -51,9 +49,41 @@ def convert_to_concrete_ml(user_code):
     transformed_tree = transformer.visit(tree)
 
     save_code_str = """
-directory_name = '/app/results'
+
+import os
+import shutil
+import numpy as np
+from concrete.ml.deployment import FHEModelClient, FHEModelDev, FHEModelServer
+current_path = os.getcwd()
+temp_path = os.path.join(current_path, 'blindml_output')
+if os.path.exists(temp_path) and os.path.isdir(temp_path):
+    shutil.rmtree(temp_path)
+if not os.path.exists(temp_path):
+    os.makedirs(temp_path)
+
+X_train_np_blindml = np.array({}""".format(transformer.fit_variable_name) + """)
+logistic_model.compile(X_train_np_blindml)  
+
+directory_name = temp_path
 fhemodel_dev = FHEModelDev(directory_name, {}""".format(transformer.model_variable_name) + """)
 fhemodel_dev.save()
+
+# Let's create the client and load the model
+key_path = os.path.join(directory_name, 'keys')
+if os.path.exists(key_path) and os.path.isdir(key_path):
+    shutil.rmtree(temp_path)
+if not os.path.exists(key_path):
+    os.makedirs(key_path)
+fhemodel_client = FHEModelClient(directory_name, key_dir=key_path)
+
+# The client first need to create the private and evaluation keys.
+fhemodel_client.generate_private_and_evaluation_keys()
+
+# Get the serialized evaluation keys
+serialized_evaluation_keys = fhemodel_client.get_serialized_evaluation_keys()
+with open(key_path + "/serialized_evaluation_keys.ekl", "wb") as f:
+            f.write(serialized_evaluation_keys)
+
 """
     save_code = ast.parse(save_code_str).body
     transformed_tree.body.extend(save_code)
